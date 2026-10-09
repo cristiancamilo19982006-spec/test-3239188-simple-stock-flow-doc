@@ -65,3 +65,15 @@ Based on the physical and relational schema consisting of five tables, three tra
 | Unique username | `User.NormalizeUsername` forces lowercase | Unique index `IX_user_username` | data-model §2.5, §4 |
 | Allowed roles (`admin`, `seller`) | Domain validation via `Roles.IsValid` | Pending engine `CHECK` constraint (T-20) | data-model §2.5, §4 |
 | Frozen historical transaction data | `Sale.AddItem` snapshots live attributes | `product_name` and `category_name` columns on `sale_item` | data-model §1, §2.4, §3 |
+---
+
+## 5. Reverse SDD Traceability & Cross-Validation Matrix
+
+This closing matrix validates the architectural decisions against the artifacts derived throughout the reverse engineering workflow:
+
+| Documentation Layer | Derived Artifact | Architectural Alignment & Enforcement | Data Model Reference |
+|---|---|---|---|
+| **01 · Context** | System Scope & Actors | Boundaries isolate core application logic from external blob stores (`image_key`) and restrict usage to internal operators (`admin`, `seller`). | data-model §1, §2.5, §7.1 |
+| **02 · Domain** | Invariants & Aggregates | Transactional boundaries defined around `Product`, `Sale`, and `User`. Soft-delete (`deleted_at`) and historical snapshot integrity enforced. | data-model §2, §3, §4 |
+| **03 · Product** | Problem Statement & Vision | Back-office counter sale focus eliminates shopping cart complexity and payment gateway overhead. Concurrency protected via `xmin`. | data-model §1, §3, §9.1 |
+| **04 · Requirements** | Functional Stories & NFRs | Outbound query ports map directly to index-optimized reporting patterns (Q9) and optimistic concurrency safeguards (NFR-01). | data-model §6.1, §6.2 |
